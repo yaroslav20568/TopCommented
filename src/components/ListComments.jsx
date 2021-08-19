@@ -1,13 +1,22 @@
 import React from 'react';
 import Comment from './Comment';
+import styled from 'styled-components';
 
-function ListComments({ comments }) {
+const CommentsWrapper = styled.div`
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 20px;
+`;
+
+function ListComments({ comments, isLoading }) {
     return (
-        <div>
+        <CommentsWrapper>
             {
-                comments.map(item => <Comment {...item.data} />)
+                isLoading ? 
+                    comments.map((item, index) => <Comment key={`comment_${index}`} {...item.data} />) :
+                    'Loading...'
             }
-        </div>
+        </CommentsWrapper>
     )
 };
 
