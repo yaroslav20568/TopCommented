@@ -8,12 +8,12 @@ const CommentsWrapper = styled.div`
     grid-gap: 20px;
 `;
 
-function ListComments({ comments, isLoading }) {
+function ListComments({ itemsByComments, isLoading }) {
     return (
         <CommentsWrapper>
             {
                 isLoading ? 
-                    comments.map((item, index) => <Comment key={`comment_${index}`} {...item.data} />) :
+                    itemsByComments.map((item, index) => <Comment key={`comment_${index}`} {...item.data} />) :
                     'Loading...'
             }
         </CommentsWrapper>
