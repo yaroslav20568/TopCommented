@@ -34,11 +34,9 @@ const cutStrValue = (str) => {
         return str.substr(0, 45) + '...';
     }
     return str;
-}
+};
 
 function Comment({ thumbnail, title, num_comments, permalink }) {
-    
-
     return (
         <StyleComment>
             {

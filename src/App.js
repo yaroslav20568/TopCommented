@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ListComments from './components/ListComments';
-import styled, { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
     *, *: before, *: after {
@@ -63,71 +63,80 @@ const FilterRange = styled.input`
 `;
 
 function App() {
-    const [comments, setComments] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [autoRefresh, setAutoRefresh] = useState(false);
+    const [items, setItems] = useState([]);
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [enableAutoRefresh, setEnableAutoRefresh] = useState(false);
     const [itemsMaxComments, setItemsMaxComments] = useState(0);
     const [rangeValue, setRangeValue] = useState(0);
-    // let interval;
+    let interval;
+    const theme = {
+        media: {
+            mw992: "(max-width: 992px)",
+            mw768: "(max-width: 768px)",
+            mw600: "(max-width: 600px)",
+            mw420: "(max-width: 420px)"
+        }
+    }
 
     const findMaxComments = (arr) => {
         return Math.max(...arr.map(elem => elem.data.num_comments));
-    }
+    };
 
     const fetchData = () => {
-        setIsLoading(false);
+        setIsLoaded(false);
         fetch('https://www.reddit.com/r/reactjs.json?limit=100')
             .then(response => response.json())
             .then(({ data }) => {
-                setIsLoading(true);
-                setComments(data.children);
+                setIsLoaded(true);
+                setItems(data.children);
                 setItemsMaxComments(findMaxComments(data.children));
             })
-    }
+    };
 
     const getItemsByComments = (comments, rangeValue) => {
         return comments
             .filter(item => item.data.num_comments >= rangeValue)
             .sort((a, b) => b.data.num_comments - a.data.num_comments)
-    }
+    };
 
-    const updateRangeValue = (e) => {
-        setRangeValue(+e.target.value);
-        getItemsByComments(comments, rangeValue);
-    }
-
-    // const handlerClickButton = () => {
-    //     setAutoRefresh(!autoRefresh);
-        
-    //     interval = setInterval(fetchData, 3000);
-    //     if(!autoRefresh) {
-    //         clearInterval(interval);
-    //     }
-    // }
+    const handlerClickButton = () => {
+        setEnableAutoRefresh(!enableAutoRefresh);
+    };
 
     useEffect(() => {
         fetchData();
     }, []);
 
-    const itemsByComments = getItemsByComments(comments, rangeValue);
+    useEffect(() => {
+        if(enableAutoRefresh) {
+            interval = setInterval(fetchData, 3000);
+        }
+        return () => {
+            clearInterval(interval);
+        }
+    }, [enableAutoRefresh]);
+
+    const itemsByComments = getItemsByComments(items, rangeValue);
 
     return (
-        <RootContainer>
-            <GlobalStyle />
-            <RootTitle>Top commented.</RootTitle>
-            
-            <RootFilter>
-                <FilterRow>
-                    <FilterTitle>Current filter: {rangeValue}</FilterTitle>
-                    <FilterButton /*onClick={() => handlerClickButton()}*/>{autoRefresh ? 'Stop auto-refresh' : 'Start auto-refresh'}</FilterButton>
-                </FilterRow>
-                <FilterRow>
-                    <FilterRange onChange={(e) => updateRangeValue(e)} type="range" value={rangeValue} min="0" max={itemsMaxComments + 1} />
-                </FilterRow>
-            </RootFilter>
+        <ThemeProvider theme={theme}>
+            <RootContainer>
+                <GlobalStyle />
+                <RootTitle>Top commented.</RootTitle>
+                
+                <RootFilter>
+                    <FilterRow>
+                        <FilterTitle>Current filter: {rangeValue}</FilterTitle>
+                        <FilterButton onClick={() => handlerClickButton()}>{enableAutoRefresh ? 'Stop auto-refresh' : 'Start auto-refresh'}</FilterButton>
+                    </FilterRow>
+                    <FilterRow>
+                        <FilterRange onChange={(e) => setRangeValue(+e.target.value)} type="range" value={rangeValue} min="0" max={itemsMaxComments + 1} />
+                    </FilterRow>
+                </RootFilter>
 
-            <ListComments itemsByComments={itemsByComments} isLoading={isLoading} />
-        </RootContainer>
+                <ListComments itemsByComments={itemsByComments} isLoaded={isLoaded} />
+            </RootContainer>
+        </ThemeProvider>
     );
 }
 
