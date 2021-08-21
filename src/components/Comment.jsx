@@ -51,4 +51,4 @@ function Comment({ thumbnail, title, num_comments, permalink }) {
     );
 }
 
-export default Comment;
+export default React.memo(Comment);

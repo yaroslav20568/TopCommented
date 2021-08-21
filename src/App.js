@@ -74,7 +74,7 @@ function App() {
             mw992: "(max-width: 992px)",
             mw768: "(max-width: 768px)",
             mw600: "(max-width: 600px)",
-            mw420: "(max-width: 420px)"
+            mw360: "(max-width: 360px)"
         }
     }
 
@@ -123,7 +123,6 @@ function App() {
             <RootContainer>
                 <GlobalStyle />
                 <RootTitle>Top commented.</RootTitle>
-                
                 <RootFilter>
                     <FilterRow>
                         <FilterTitle>Current filter: {rangeValue}</FilterTitle>
@@ -133,7 +132,6 @@ function App() {
                         <FilterRange onChange={(e) => setRangeValue(+e.target.value)} type="range" value={rangeValue} min="0" max={itemsMaxComments + 1} />
                     </FilterRow>
                 </RootFilter>
-
                 <ListComments itemsByComments={itemsByComments} isLoaded={isLoaded} />
             </RootContainer>
         </ThemeProvider>

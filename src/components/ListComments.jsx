@@ -15,7 +15,7 @@ const CommentsWrapper = styled.div`
     @media ${props => props.theme.media.mw600} {
         grid-template-columns: repeat(2, 1fr);
     }
-    @media ${props => props.theme.media.mw420} {
+    @media ${props => props.theme.media.mw360} {
         grid-template-columns: repeat(1, 1fr);
     }
 `;
